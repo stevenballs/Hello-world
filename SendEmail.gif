@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Net;
+using System.Net.Mail;
+public Boolean SendEmail(string subjectMail,string mailBody,List<string> mailTo,List<string> mailCC,List<string> mailBCC,string typeEmail) 
+        {
+            ConnectorNew connector = new ConnectorNew(ConnectionInfo.connString());
+            Boolean result = false;
+            date = DateTime.Now;
+            string dateNow = date.Year + "/" + date.Month + "/" + (date.Day).ToString();
+            try
+            {
+                if (typeEmail == "com") {
+                    MailMessage mail = new MailMessage();
+                    SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+                    mail.BodyEncoding = System.Text.Encoding.GetEncoding("windows-874");
+                    mail.From = new MailAddress("test@test.com");
+                    if (mailTo != null) { for (var i = 0; i < mailTo.Count(); i++) { mail.To.Add(mailTo[i]); } }
+                    if (mailCC != null) { for (var i = 0; i < mailCC.Count(); i++) { mail.CC.Add(mailCC[i]); } }
+                    if (mailBCC != null) { for (var i = 0; i < mailBCC.Count(); i++) { mail.Bcc.Add(mailBCC[i]); } }
+                    mail.Subject = subjectMail;
+                    mail.IsBodyHtml = true;
+                    mail.Body = mailBody;
+                    SmtpServer.Port = 587;
+                    SmtpServer.UseDefaultCredentials = false;
+                    SmtpServer.EnableSsl = true;
+                    SmtpServer.Credentials = new System.Net.NetworkCredential("test@test.com", "test");
+                    SmtpServer.Send(mail);
+                    result = true;
+                }
+                else if (typeEmail == "local") {
+                    MailMessage mailLocal = new MailMessage();
+                    SmtpClient SmtpServerLocal = new SmtpClient("192.168.0.254");
+                    mailLocal.Subject = subjectMail;
+                    mailLocal.From = new MailAddress("test@test.local");
+                    if (mailTo != null) { for (var i = 0; i < mailTo.Count(); i++) { if (mailTo[i] != "") { mailLocal.To.Add(mailTo[i]); } } }
+                    if (mailCC != null) { for (var i = 0; i < mailCC.Count(); i++) { mailLocal.CC.Add(mailCC[i]); } }
+                    if (mailBCC != null) { for (var i = 0; i < mailBCC.Count(); i++) { mailLocal.Bcc.Add(mailBCC[i]); } }
+                    mailLocal.Subject = subjectMail;
+                    mailLocal.IsBodyHtml = true;
+                    mailLocal.Body = mailBody;
+                    SmtpServerLocal.Port = 25;
+                    SmtpServerLocal.UseDefaultCredentials = false;
+                    SmtpServerLocal.EnableSsl = false;
+                    SmtpServerLocal.Credentials = new System.Net.NetworkCredential("test@test.local", "internalss");
+                    SmtpServerLocal.Send(mailLocal);
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+        #endregion
