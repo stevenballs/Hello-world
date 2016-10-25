@@ -1,0 +1,61 @@
+using System;
+using System.IO;
+using System.Runtime.Serialization.Json;
+using System.Text;
+using System.Web.Script.Serialization;
+
+namespace BAL
+{
+    public class Json
+    {
+        /// <summary>
+        /// Serializer
+        /// </summary>
+        public static string JsonSerializer<T>(T t)
+        {
+            try
+            {
+                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
+                MemoryStream ms = new MemoryStream();
+                serializer.WriteObject(ms, t);
+                string jsonString = Encoding.UTF8.GetString(ms.ToArray());
+                ms.Close();
+                return jsonString;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Deserialize
+        /// </summary>
+        public static T JsonDeserialize<T>(string jsonString)
+        {
+            //try
+            //{
+                DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(T));
+                MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+                T obj = (T)serializer.ReadObject(ms);
+                return obj;
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw ex;
+            //}
+        }
+
+        public static T Deserialize<T>(string input)
+        {
+            T @rn = default(T);
+            try
+            {
+                JavaScriptSerializer ser = new JavaScriptSerializer();
+                @rn = ser.Deserialize<T>(input);
+                return @rn;
+            }
+            catch (Exception ex) { throw (ex); }
+        }
+    }
+}

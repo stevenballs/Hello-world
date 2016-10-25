@@ -1,0 +1,59 @@
+็How to Send Data With Json.
+1.In file Javascript this function call server with ajax technology.
+function AjaxWebService(webMethod, data) {
+    var _tmp;
+    $.ajax({
+        async: false
+        , type: "POST"
+        , url: webMethod
+        , contentType: "application/json; charset=utf-8"
+        , dataType: "json"
+        , data: "{data:'" + JSON.stringify(data).replace(/'/g, "\\'\\'") + "'}"
+        , success: function (response) {
+            _tmp = response.d
+        }
+        , error: function (xhr, status, msg) {
+            var error = eval("(" + xhr.responseText + ")");
+            console.log(error.Message);
+            _tmp = null
+        }
+    });
+    return _tmp;
+}
+
+2.C# Server language section webservice
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.Services;
+
+[WebMethod]
+public static object Get_xxx(string data)
+{
+	ClassMaster ref = new ClassMaster();
+	return ref.GetLogic(data);
+}
+
+3.JsonDeserialize Data in Business Logic.
+//System.Runtime.Selialization
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+ public List<PremiumPA> GetListPremium(string data)
+{
+	try
+	{
+		ClassInstantModel model = Json.JsonDeserialize<ClassInstantModel>(data);//ref from Json class
+		ClassMaster classmaster = new ClassMaster();
+		return ClassMaster.DLogic(model);
+	}
+	catch (Exception)
+	{
+		throw;
+	}
+}
